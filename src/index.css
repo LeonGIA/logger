@@ -44,10 +44,36 @@ ul {
 
 .timesContainer{
   background-color: #1a1a1a;
+  padding: 1em;
 }
 .times {
   display: inline;
   padding: 1em;
+}
+
+.topFuncBar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  display: inline-block;
+}
+.topFuncBar button {
+  width: 40%;
+  padding: 2em;
+  margin: 1em;
+  background-color: rgba(99, 146, 240, 0.2);
+}
+
+.bottomFuncBar {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+}
+.bottomFuncBar button {
+  padding: 2em;
+  margin: 1em;
+  background-color: rgba(99, 146, 240, 0.2);
 }
 
 button {

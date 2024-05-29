@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Location } from "./interfaces/location.ts";
 import './App.css'
 
@@ -116,7 +116,7 @@ const LOCATIONS_LIST: Location[] = [
     latitude: 39.630806,
     longitude: -75.727045,
     radius: 100,
-    times_visited: [1400, 1500, 1621]
+    times_visited: []
   }
   // Add more target areas as needed
 ];
@@ -126,6 +126,13 @@ function App() {
     const savedLocations = localStorage.getItem("locationsLog");
     return savedLocations ? JSON.parse(savedLocations) : LOCATIONS_LIST;
   });
+
+  const [showMain, setShowMain] = useState<boolean>(true);
+
+  // Update localStorage whenever the locations change
+  useEffect(() => {
+    localStorage.setItem("locationsLog", JSON.stringify(locations));
+  }, [locations]);
 
   // Gets and returns the current time in military hours
   function getCurrentTime(): number {
@@ -139,17 +146,17 @@ function App() {
     return timeNumber;
   }
 
-  function updateTimesVisited(loc: Location) {
+  function updateTimesVisited(loc: Location | string) {
     const updatedLocations = locations.map((location) => {
       if (location.name === (typeof loc === "string" ? loc : loc.name)) {
         const timeExists = location.times_visited.find(
           (time) => time == getCurrentTime()
         );
-        // Update the times_visited array with the current timestamp (you can modify this as needed)
+        // Update the times_visited array with the current time
         if (timeExists) {
           window.alert("Time already exists!");
         } else {
-          window.alert("Time added to " + loc.name)
+          window.alert("Time added to " + (typeof loc == "string" ? loc : loc.name))
           location.times_visited.push(getCurrentTime());
         }
       }
@@ -159,6 +166,7 @@ function App() {
     setLocations(updatedLocations);
   }
 
+  // Removes the most recent time visited at a location. Click multiple times to clear all times.
   function removeTime(loc: Location) {
     const updatedLocations = locations.map((location) => {
       if (location.name === (typeof loc === "string" ? loc : loc.name)) {
@@ -170,11 +178,91 @@ function App() {
     setLocations(updatedLocations);
   }
 
+  // Clears the user's saved data
+  function clearLocalStorage() {
+    localStorage.clear();
+    window.location.reload();
+  }
+
+  // Handles getting the user's location. Passes off checking if the user is in a specific area
+  // to another function
+  function getLocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const userLocation = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+          };
+          checkEnteredArea(userLocation);
+        },
+        (error) => {
+          window.alert("Error getting location");
+          console.error("Error getting location:", error.message);
+        },
+        { enableHighAccuracy: true, maximumAge: 10000, timeout: 10000 }
+      );
+    } else {
+      window.alert("Geolocation not supported");
+    }
+  };
+
+  // Handles checking if the user is in a specific area by comparing against the pre-determined radius
+  // for each area.
+  // Passess off the math to another function.
+  const checkEnteredArea = (userLocation: {
+    latitude: number;
+    longitude: number;
+  }) => {
+    // Check if the user is within the radius of ANY target area
+    const enteredArea = LOCATIONS_LIST.find((targetArea: Location) => {
+        const areaLocation = {
+          latitude: targetArea.latitude,
+          longitude: targetArea.longitude
+        }
+        const distance = calculateDistance(userLocation, areaLocation);
+        if(distance <= targetArea.radius) {
+          return targetArea.name
+        }
+    });
+
+    if (enteredArea) {
+        updateTimesVisited(enteredArea);
+    } else {
+        window.alert("Not Valid Area");
+    }
+  };
+
+  // Calculates distance from two points in meters
+  const calculateDistance = (
+      point1: { latitude: number; longitude: number },
+      point2: { latitude: number; longitude: number }
+  ) => {
+      const radlat1 = (Math.PI * point1.latitude) / 180;
+      const radlat2 = (Math.PI * point2.latitude) / 180;
+      const theta = point1.longitude - point2.longitude;
+      const radtheta = (Math.PI * theta) / 180;
+
+      let dist =
+          Math.sin(radlat1) * Math.sin(radlat2) +
+          Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+
+      dist = Math.acos(dist);
+      dist = (dist * 180) / Math.PI;
+      dist = dist * 60 * 1.1515 * 1.609344 * 1000; // Convert to meters
+
+      return dist;
+  };
+
   return (
     <>
+      <div className="topFuncBar">
+        <button onClick={() => clearLocalStorage()}>Clear</button>
+        <button onClick={() => getLocation()}>Auto</button>
+      </div>
       <h1>Location Logger</h1>
       <div className="locations">
-        <li className="locations_list">
+        <li className="locations_list" id="main-side" hidden={showMain ? false : true}>
           {locations.slice(0, 8).map(
             (loc: Location): JSX.Element => (
               <ul key={loc.name}>
@@ -193,7 +281,7 @@ function App() {
             )
           )}
         </li>
-        <li className="locations_list">
+        <li className="locations_list" id="outside" hidden={showMain ? true : false}>
           {locations.slice(8).map(
             (loc: Location): JSX.Element => (
               <ul key={loc.name}>
@@ -212,6 +300,9 @@ function App() {
             )
           )}
         </li>
+      </div>
+      <div className="bottomFuncBar">
+        <button onClick={() => setShowMain(!showMain)}>{showMain ? "Outside" : "Main"}</button>
       </div>
     </>
   )
