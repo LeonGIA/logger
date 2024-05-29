@@ -69,3 +69,8 @@ button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
+.remove {
+  padding: 0.5em;
+  color: red;
+  border: 1px solid red;
+}

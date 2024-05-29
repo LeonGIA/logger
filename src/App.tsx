@@ -159,6 +159,17 @@ function App() {
     setLocations(updatedLocations);
   }
 
+  function removeTime(loc: Location) {
+    const updatedLocations = locations.map((location) => {
+      if (location.name === (typeof loc === "string" ? loc : loc.name)) {
+        location.times_visited.pop();
+      }
+      return location;
+    });
+
+    setLocations(updatedLocations);
+  }
+
   return (
     <>
       <h1>Location Logger</h1>
@@ -177,6 +188,7 @@ function App() {
                     )
                   )}
                 </div>
+                <button onClick={() => removeTime(loc)} className="remove">Remove</button>
               </ul>
             )
           )}
@@ -195,6 +207,7 @@ function App() {
                     )
                   )}
                 </div>
+                <button onClick={() => removeTime(loc)} className="remove">Remove</button>
               </ul>
             )
           )}
