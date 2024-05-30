@@ -254,11 +254,25 @@ function App() {
       return dist;
   };
 
+  // Downloads the list of locations
+  function downloadLocations() {
+    const jsonBlob = new Blob([JSON.stringify(locations, null, 2)], {
+        type: "application/json"
+    });
+
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(jsonBlob);
+    a.download = getCurrentTime().toString();
+    a.click();
+};
+
   return (
     <>
-      <div className="topFuncBar">
-        <button onClick={() => clearLocalStorage()}>Clear</button>
+      <div className="auto">
         <button onClick={() => getLocation()}>Auto</button>
+      </div>
+      <div className="locSelect">
+        <button onClick={() => setShowMain(!showMain)}>{showMain ? "Outside" : "Main"}</button>
       </div>
       <h1>Location Logger</h1>
       <div className="locations">
@@ -276,7 +290,7 @@ function App() {
                     )
                   )}
                 </div>
-                <button onClick={() => removeTime(loc)} className="remove">Remove</button>
+                <button onClick={() => removeTime(loc)} id="remove">Remove</button>
               </ul>
             )
           )}
@@ -285,7 +299,7 @@ function App() {
           {locations.slice(8).map(
             (loc: Location): JSX.Element => (
               <ul key={loc.name}>
-                <button onClick={() => updateTimesVisited(loc)}>
+                <button className="out" onClick={() => updateTimesVisited(loc)}>
                   {loc.name}
                 </button>
                 <div className="timesContainer">
@@ -295,14 +309,13 @@ function App() {
                     )
                   )}
                 </div>
-                <button onClick={() => removeTime(loc)} className="remove">Remove</button>
+                <button onClick={() => removeTime(loc)} id="remove">Remove</button>
               </ul>
             )
           )}
         </li>
-      </div>
-      <div className="bottomFuncBar">
-        <button onClick={() => setShowMain(!showMain)}>{showMain ? "Outside" : "Main"}</button>
+        <button className="clearButton" onClick={() => clearLocalStorage()}>Clear</button>
+        <button className="downloadButton" onClick={() => downloadLocations()}>Download</button>
       </div>
     </>
   )

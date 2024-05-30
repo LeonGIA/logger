@@ -42,6 +42,10 @@ ul {
   padding: 0;
 }
 
+#outside .out {
+  border: 1px solid green;
+}
+
 .timesContainer{
   background-color: #1a1a1a;
   padding: 1em;
@@ -51,28 +55,23 @@ ul {
   padding: 1em;
 }
 
-.topFuncBar {
+.auto {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  display: inline-block;
 }
-.topFuncBar button {
-  width: 40%;
-  padding: 2em;
-  margin: 1em;
+.auto button {
+  padding: 3em;
   background-color: rgba(99, 146, 240, 0.2);
 }
 
-.bottomFuncBar {
+.locSelect {
   position: fixed;
-  left: 0;
-  bottom: 0;
+  top: 0;
+  right: 0;
 }
-.bottomFuncBar button {
-  padding: 2em;
-  margin: 1em;
+.locSelect button {
+  padding: 3em;
   background-color: rgba(99, 146, 240, 0.2);
 }
 
@@ -95,8 +94,20 @@ button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
-.remove {
+#remove {
   padding: 0.5em;
   color: red;
   border: 1px solid red;
+}
+
+.clearButton {
+  margin-top: 5em;
+  border: 1px solid red;
+  color: red;
+}
+
+.downloadButton {
+  margin-top: 2em;
+  border: 1px solid green;
+  color: green;
 }
