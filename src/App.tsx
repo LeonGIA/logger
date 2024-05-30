@@ -168,14 +168,19 @@ function App() {
 
   // Removes the most recent time visited at a location. Click multiple times to clear all times.
   function removeTime(loc: Location) {
-    const updatedLocations = locations.map((location) => {
-      if (location.name === (typeof loc === "string" ? loc : loc.name)) {
-        location.times_visited.pop();
-      }
-      return location;
-    });
 
-    setLocations(updatedLocations);
+    const userConfirmed = window.confirm("Are you sure?")
+
+    if(userConfirmed) {
+      const updatedLocations = locations.map((location) => {
+        if (location.name === (typeof loc === "string" ? loc : loc.name)) {
+          location.times_visited.pop();
+        }
+        return location;
+      });
+
+      setLocations(updatedLocations);
+    }
   }
 
   // Clears the user's saved data
