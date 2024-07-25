@@ -5,7 +5,7 @@ import './App.css'
 // Defines all the relevant locations in the Park
 // latitude and longitude correspond to a central point in the real-world areas
 // Radius (in meters) defines the area you must be within to be considered as "in" the area
-const LOCATIONS_LIST: Location[] = [
+var LOCATIONS_LIST_MAIN: Location[] = [
   {
     name: "Maintenance",
     latitude: 39.56728,
@@ -56,10 +56,26 @@ const LOCATIONS_LIST: Location[] = [
     times_visited: []
   },
   {
+    name: "MP Ranger",
+    latitude: 39.557987,
+    longitude: -75.720167,
+    radius: 50,
+    times_visited: []
+  },
+  {
     name: "Area 1",
     latitude: 39.559511,
     longitude: -75.714624,
     radius: 200,
+    times_visited: []
+  }
+]
+var LOCATIONS_LIST_OUTSIDE: Location[] = [
+  {
+    name: "Sunset Stables",
+    latitude: 39.570183,
+    longitude: -75.728848,
+    radius: 100,
     times_visited: []
   },
   {
@@ -112,6 +128,13 @@ const LOCATIONS_LIST: Location[] = [
     times_visited: []
   },
   {
+    name: "Wetlands",
+    latitude: 39.570218,
+    longitude: -75.733690,
+    radius: 200,
+    times_visited: []
+  },
+  {
     name: "Sunset Lake",
     latitude: 39.630806,
     longitude: -75.727045,
@@ -124,7 +147,7 @@ const LOCATIONS_LIST: Location[] = [
 function App() {
   const [locations, setLocations] = useState<Location[]>(() => {
     const savedLocations = localStorage.getItem("locationsLog");
-    return savedLocations ? JSON.parse(savedLocations) : LOCATIONS_LIST;
+    return savedLocations ? JSON.parse(savedLocations) : LOCATIONS_LIST_MAIN.concat(LOCATIONS_LIST_OUTSIDE);
   });
 
   const [showMain, setShowMain] = useState<boolean>(true);
@@ -168,6 +191,7 @@ function App() {
 
   // Removes the most recent time visited at a location. Click multiple times to clear all times.
   function removeTime(loc: Location) {
+    console.log(locations);
 
     const userConfirmed = window.confirm("Are you sure?")
 
@@ -220,7 +244,7 @@ function App() {
     longitude: number;
   }) => {
     // Check if the user is within the radius of ANY target area
-    const enteredArea = LOCATIONS_LIST.find((targetArea: Location) => {
+    const enteredArea = LOCATIONS_LIST_MAIN.concat(LOCATIONS_LIST_OUTSIDE).find((targetArea: Location) => {
         const areaLocation = {
           latitude: targetArea.latitude,
           longitude: targetArea.longitude
@@ -282,7 +306,7 @@ function App() {
       <h1>Location Logger</h1>
       <div className="locations">
         <li className="locations_list" id="main-side" hidden={showMain ? false : true}>
-          {locations.slice(0, 8).map(
+          {locations.slice(0, 9).map(
             (loc: Location): JSX.Element => (
               <ul key={loc.name}>
                 <button onClick={() => updateTimesVisited(loc)}>
@@ -301,7 +325,7 @@ function App() {
           )}
         </li>
         <li className="locations_list" id="outside" hidden={showMain ? true : false}>
-          {locations.slice(8).map(
+          {locations.slice(9).map(
             (loc: Location): JSX.Element => (
               <ul key={loc.name}>
                 <button className="out" onClick={() => updateTimesVisited(loc)}>
